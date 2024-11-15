@@ -9,12 +9,13 @@ import {
   signInWithPopup,
   onAuthStateChanged,
 } from "firebase/auth";
+import axios from "axios";
 
 export const AuthContext = createContext(null);
 
 const auth = getAuth(app);
 
-const AuthProvider = ({children}) => {
+const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -39,8 +40,21 @@ const AuthProvider = ({children}) => {
   useEffect(() => {
     const unsubcribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setLoading(false);
-      console.log(currentUser)
+      if (currentUser) {
+        axios
+          .post(`http://localhost:4000/authentication`, {
+            email: currentUser.email,
+          })
+          .then((data) => {
+            if (data.data) {
+              localStorage.setItem("access-token", data?.data?.token);
+              setLoading(false);
+            }
+          });
+      } else {
+        localStorage.removeItem;
+        setLoading(false);
+      }
     });
     return () => {
       return unsubcribe();
@@ -56,10 +70,8 @@ const AuthProvider = ({children}) => {
     googlelogin,
   };
   return (
-    <AuthContext.Provider value={authInfo}>
-    {children}
-  </AuthContext.Provider>
-  )
+    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;
