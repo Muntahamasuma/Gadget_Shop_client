@@ -7,7 +7,10 @@ import About from "../Pages/About";
 import ContactUs from "../Pages/ContactUs";
 import Login from "../Pages/Login";
 import SignUp from "../Pages/Register";
-import Dashborad from "../Pages/DashBorad/Dashborad";
+// import Dashborad from "../Layouts/DashBorad/Dashborad";
+import Dashboard from "../Layouts/DashboradLayout/Dashboard";
+import PrivateRoute from "./PrivateRoute";
+import Dash_overview from "../Pages/DashBorad/Dash_overview";
 
 export const router = createBrowserRouter([
   {
@@ -38,10 +41,15 @@ export const router = createBrowserRouter([
         path:"/register",
         element: <SignUp></SignUp>
       },
-      {
-        path:"/dashboard",
-        element: <Dashborad></Dashborad>
-      }
-    ]
+    ],
   },
+    {path:'/dashboard',
+      element:<PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
+      children:[
+        {
+          path:'/dashboard/overview',
+          element:<Dash_overview/>
+        }
+      ]
+    }
 ]);
